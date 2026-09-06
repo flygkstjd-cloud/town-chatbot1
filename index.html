@@ -26,6 +26,22 @@
         const API_KEY = "AQ.Ab8RN6JULjgvJte0vyS6uVUmUd_8xDdH6UdPOCHS8d6f4lHHHg"; 
         const chatBox = document.getElementById('chat-box');
 
+        // 🗣️ 할아버지 목소리로 읽어주는 함수 추가
+        function speakLikeGrandpa(text) {
+            // 태블릿이 이미 말하고 있으면 멈춤
+            window.speechSynthesis.cancel();
+            
+            // 별표(*) 같은 특수기호는 읽지 않도록 제거
+            const cleanText = text.replace(/\*/g, '');
+            
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'ko-KR'; // 한국어 설정
+            utterance.pitch = 0.6;    // 목소리 높낮이 (0~2, 낮을수록 할아버지 느낌)
+            utterance.rate = 0.85;    // 말하기 속도 (0.1~10, 약간 느리게)
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const text = input.value;
@@ -48,9 +64,16 @@
                 
                 const data = await response.json();
                 document.getElementById('loading').remove();
+                
                 const reply = data.candidates[0].content.parts[0].text;
+                
+                // 화면에 글자 띄우기
                 chatBox.innerHTML += `<div class="bot-msg">👴 덕배 할아버지: <br>${reply.replace(/\n/g, '<br>')}</div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
+                
+                // 🗣️ 대답이 나오자마자 소리로 읽어주기 실행!
+                speakLikeGrandpa(reply);
+                
             } catch (error) {
                 document.getElementById('loading').remove();
                 chatBox.innerHTML += `<div class="bot-msg" style="color:red;">앗, 통신이 잠시 끊겼나 봐요. 다시 말해볼까요?</div>`;
