@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>덕배 할아버지와 대화하기</title>
+    <title>영희 할머니와 대화하기</title>
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; background-color: #f0f8ff; padding: 20px; }
-        #chat-box { height: 60vh; background: white; border-radius: 15px; padding: 20px; overflow-y: auto; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); font-size: 1.2em; }
-        .user-msg { color: blue; text-align: right; margin-bottom: 10px; }
-        .bot-msg { color: #333; text-align: left; margin-bottom: 10px; background-color: #ffebcd; padding: 10px; border-radius: 10px; display: inline-block;}
+        body { font-family: 'Malgun Gothic', sans-serif; background-color: #fff8e1; padding: 20px; }
+        #chat-box { height: 60vh; background: white; border-radius: 15px; padding: 20px; overflow-y: auto; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); font-size: 1.2em; line-height: 1.6; }
+        .user-msg { color: #1565c0; text-align: right; margin-bottom: 15px; font-weight: bold; }
+        .bot-msg { color: #333; text-align: left; margin-bottom: 15px; background-color: #ffe0b2; padding: 15px; border-radius: 15px; display: inline-block; width: 85%; }
+        .lang-badge { font-weight: bold; color: #d84315; }
         input { width: 75%; padding: 15px; font-size: 1.2em; border-radius: 10px; border: 1px solid #ccc; }
-        button { width: 20%; padding: 15px; font-size: 1.2em; background-color: #4CAF50; color: white; border: none; border-radius: 10px; cursor: pointer; }
+        button { width: 20%; padding: 15px; font-size: 1.2em; background-color: #ff8f00; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center;">👴 덕배 할아버지와 대화하기</h1>
+    <h1 style="text-align: center; color: #e65100;">👵 영희 할머니와 대화하기</h1>
     <div id="chat-box"></div>
     <div style="display: flex; justify-content: space-between;">
-        <input type="text" id="user-input" placeholder="할아버지에게 할 말을 적어보세요!" onkeypress="if(event.key === 'Enter') sendMessage()">
+        <input type="text" id="user-input" placeholder="할머니에게 위로나 조언을 해보세요!" onkeypress="if(event.key === 'Enter') sendMessage()">
         <button onclick="sendMessage()">보내기</button>
     </div>
 
@@ -26,21 +27,33 @@
         const API_KEY = "AQ.Ab8RN6JULjgvJte0vyS6uVUmUd_8xDdH6UdPOCHS8d6f4lHHHg"; 
         const chatBox = document.getElementById('chat-box');
 
-        // 🗣️ 할아버지 목소리로 읽어주는 함수 추가
-        function speakLikeGrandpa(text) {
-            // 태블릿이 이미 말하고 있으면 멈춤
-            window.speechSynthesis.cancel();
-            
-            // 별표(*) 같은 특수기호는 읽지 않도록 제거
-            const cleanText = text.replace(/\*/g, '');
-            
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = 'ko-KR'; // 한국어 설정
-            utterance.pitch = 0.6;    // 목소리 높낮이 (0~2, 낮을수록 할아버지 느낌)
-            utterance.rate = 0.85;    // 말하기 속도 (0.1~10, 약간 느리게)
-            
-            window.speechSynthesis.speak(utterance);
-        }
+        // 선생님이 작성하신 완벽한 프롬프트 설정
+        const systemPrompt = `너는 초등학교 3학년 아이들과 대화하는 다정하고 친근한 70대 '영희 할머니'야.
+
+# 현재 고민 목록
+1. 햄버거 가게 키오스크 주문: 손주에게 햄버거를 사주고 싶어 기계 앞에 갔지만, 손이 느리고 뒷사람이 눈치 줄까 봐 무서워 포기하고 돌아온 고민.
+2. 경로당(노인정) 새 친구 사귀기: 외로워서 노래 교실에 가고 싶지만, 이미 자기들끼리 친한 사람들 사이에서 낄 수 없을까 봐 부끄럽고 두려운 고민.
+3. 손주의 신조어/유행어: 손주들과 대화하고 싶지만 아이들 말을 알아듣지 못하고, 물어보면 귀찮아할까 봐 겁이 나는 고민.
+4. 놀이터에서의 신체적 한계: 손주랑 놀이터에서 술래잡기를 하고 싶지만, 다리가 아파 뛰지 못해 쓸모없다고 느낄까 봐 미안한 고민.
+
+# 대화 규칙 (매우 중요)
+- 쉬운 어휘와 짧은 문장: 3학년 수준의 아주 쉬운 단어만 쓰고, 한 번에 2~3문장까지만 짧게 대답해.
+- 다정한 말투: "~단다", "~했어?", "~할까?" 같이 따뜻한 할머니 말투를 써.
+- 칭찬 먼저 하기: 학생이 조언을 해주면, 무조건 "와, 정말 좋은 생각이구나!", "우리 손주 말이 참 맞네!"라며 먼저 긍정적으로 칭찬하고 기뻐해 줘.
+- 조건부 거절 및 정서적 두려움 표현: 칭찬 후 곧바로, 그 조언을 시도할 때 네가 겪는 현실적인 감정이나 두려움을 털어놓아. (예: "그런데 막상 하려니 너무 떨려") 마지막에는 "이럴 땐 내 마음을 어떻게 다잡아야 할까?"라며 아이들의 마음 어린 조언을 한 번 더 이끌어내.
+
+# 출력 형식 및 다국어 지원 (매우 중요)
+네가 대답할 때는 반드시 아래 3단계 형식을 지켜서 출력해 줘. 괄호도 꼭 써줘.
+[한국어] (대답 내용)
+[Uzbek] (매우 짧고 쉬운 요약 번역)
+[Bengali] (한국어와 비슷한 수준의 번역)`;
+
+        let chatHistory = [];
+
+        // 🌟 접속하자마자 할머니가 먼저 4가지 고민 중 하나를 랜덤으로 말하도록 찌르기
+        window.onload = () => {
+            fetchAI("안녕 할머니! 오늘 무슨 고민 있으세요? 4가지 고민 중 하나를 랜덤으로 골라서 저한테 먼저 이야기해 주세요.", true);
+        };
 
         async function sendMessage() {
             const input = document.getElementById('user-input');
@@ -49,16 +62,28 @@
 
             chatBox.innerHTML += `<div class="user-msg">👦 나: ${text}</div>`;
             input.value = '';
-            chatBox.innerHTML += `<div class="bot-msg" id="loading">👴 할아버지 생각 중...</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
+
+            await fetchAI(text, false);
+        }
+
+        async function fetchAI(text, isFirstMessage) {
+            chatHistory.push({ role: "user", parts: [{ text: text }] });
+            
+            if (isFirstMessage) {
+                chatBox.innerHTML += `<div class="bot-msg" id="loading">👵 영희 할머니가 다가오고 있어요...</div>`;
+            } else {
+                chatBox.innerHTML += `<div class="bot-msg" id="loading">👵 할머니 생각 중...</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
 
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        system_instruction: { parts: [{ text: "너는 해남 화원면에 30년 넘게 살고 있는 '덕배 할아버지'야. 다리가 불편해 지팡이를 짚고 다녀. 초등학교 3학년과 외국인 학생이 쉽게 이해할 수 있게 아주 쉬운 단어로 2~3문장만 다정하게 말해. 대화 끝에는 마을에 대한 쉬운 질문을 던져줘." }] },
-                        contents: [{ parts: [{ text: text }] }]
+                        system_instruction: { parts: [{ text: systemPrompt }] },
+                        contents: chatHistory
                     })
                 });
                 
@@ -66,17 +91,20 @@
                 document.getElementById('loading').remove();
                 
                 const reply = data.candidates[0].content.parts[0].text;
+                chatHistory.push({ role: "model", parts: [{ text: reply }] });
                 
-                // 화면에 글자 띄우기
-                chatBox.innerHTML += `<div class="bot-msg">👴 덕배 할아버지: <br>${reply.replace(/\n/g, '<br>')}</div>`;
+                // 3가지 언어 구분을 보기 좋게 디자인
+                let formattedReply = reply.replace(/\n/g, '<br>');
+                formattedReply = formattedReply.replace(/\[한국어\]/g, '<span class="lang-badge">[한국어]</span>');
+                formattedReply = formattedReply.replace(/\[Uzbek\]/g, '<br><span class="lang-badge">[Uzbek]</span>');
+                formattedReply = formattedReply.replace(/\[Bengali\]/g, '<br><span class="lang-badge">[Bengali]</span>');
+
+                chatBox.innerHTML += `<div class="bot-msg">👵 영희 할머니: <br><br>${formattedReply}</div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
-                
-                // 🗣️ 대답이 나오자마자 소리로 읽어주기 실행!
-                speakLikeGrandpa(reply);
                 
             } catch (error) {
                 document.getElementById('loading').remove();
-                chatBox.innerHTML += `<div class="bot-msg" style="color:red;">앗, 통신이 잠시 끊겼나 봐요. 다시 말해볼까요?</div>`;
+                chatBox.innerHTML += `<div class="bot-msg" style="color:red;">앗, 통신이 잠시 끊겼나 봐요. 새로고침 해주세요!</div>`;
             }
         }
     </script>
